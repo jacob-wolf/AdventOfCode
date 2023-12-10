@@ -1,4 +1,4 @@
-use std::fs::read_to_string;
+use std::{fs::read_to_string, arch::x86_64::_mm_loaddup_pd};
 
 fn main() {
     println!("{:?}", part1(&"input.txt"));
@@ -202,6 +202,18 @@ fn part2(path: &str) -> usize {
         };
         previous_step_direction = next_step_direction;
     }
+    let max_x = loop_coordinates.iter().max().unwrap().0;
+    let min_x = loop_coordinates.iter().min().unwrap().0;
 
-    todo!()
+    let max_y = loop_coordinates.iter().map(|(_,y)| y).max().unwrap();
+    let min_y = loop_coordinates.iter().map(|(_,y)| y).min().unwrap();
+    
+    let x_extent_internal = max_x - min_x - 2;
+    let y_extent_internal = max_y - min_y - 2;
+
+
+    let corner_char_count = loop_coordinates.iter().map(|(row, col)| map[*row][*col]).filter(|c| ['7', 'F', 'J', 'L'].contains(c)).collect::<Vec<char>>().len() - 4;
+    
+    y_extent_internal*x_extent_internal - corner_char_count.div_euclid(2)
+
 }
