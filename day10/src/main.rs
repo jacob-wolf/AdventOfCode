@@ -138,7 +138,7 @@ fn part2(path: &str) -> usize {
         ) {
         previous_step_direction = StepDirection::Up;
         (starting_coordinate.0 - 1, starting_coordinate.1)
-    } else if is_step_valid(
+    } else if starting_coordinate.1 != map[0].len() -1 && is_step_valid(
         &map[starting_coordinate.0][starting_coordinate.1 + 1],
         &StepDirection::Right,
     ) {
