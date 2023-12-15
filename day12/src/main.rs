@@ -1,8 +1,10 @@
-use std::{collections::HashMap, fs::read_to_string};
+use std::{collections::HashMap, fs::read_to_string, time::Instant};
 
 fn main() {
+    let timer = Instant::now();
     println!("{}", part1(&"input.txt"));
     println!("{}", part2(&"input.txt"));
+    println!("{}", timer.elapsed().as_millis());
 }
 #[derive(Clone, Copy, Debug, PartialEq, Hash, Eq)]
 enum Status {
@@ -43,7 +45,7 @@ fn part1(path: &str) -> usize {
 
     lines
         .iter()
-        .for_each(|(positions, hint)| total_configs += solve_small_line(&positions, &hint));
+        .for_each(|(positions, hint)| total_configs += solve_small_line(positions, hint));
 
     total_configs
 }
@@ -198,10 +200,10 @@ fn part2(path: &str) -> usize {
 fn solve_big_line_wrapper(statuses: Vec<Status>, hints: Vec<usize>) -> usize {
     let mut cache: HashMap<(Vec<Status>, Vec<usize>, Option<Status>), usize> = HashMap::new();
 
-    solve_big_line_w_caching(statuses, hints, None, &mut cache)
+    solve_big_line(statuses, hints, None, &mut cache)
 }
 
-fn solve_big_line_w_caching(
+fn solve_big_line(
     statuses: Vec<Status>,
     hints: Vec<usize>,
     forbidden: Option<Status>,
@@ -241,7 +243,7 @@ fn solve_big_line_w_caching(
             if forbidden.eq(&Some(Status::Operational)) {
                 0
             } else {
-                solve_big_line_w_caching(new_statuses, hints.clone(), None, cache)
+                solve_big_line(new_statuses, hints.clone(), None, cache)
             }
         }
         Status::Damaged => {
@@ -256,7 +258,7 @@ fn solve_big_line_w_caching(
                     next_forbidden = Some(Status::Damaged);
                 }
 
-                solve_big_line_w_caching(new_statuses, new_hints, next_forbidden, cache)
+                solve_big_line(new_statuses, new_hints, next_forbidden, cache)
             }
         }
         Status::Unknown => {
@@ -264,7 +266,7 @@ fn solve_big_line_w_caching(
             let mut unknown_addition: usize = 0;
             if forbidden.ne(&Some(Status::Operational)) {
                 unknown_addition +=
-                    solve_big_line_w_caching(new_statuses.clone(), hints.clone(), None, cache);
+                    solve_big_line(new_statuses.clone(), hints.clone(), None, cache);
             }
 
             if forbidden.ne(&Some(Status::Damaged)) {
@@ -276,8 +278,7 @@ fn solve_big_line_w_caching(
                     next_forbidden = Some(Status::Damaged);
                 }
 
-                unknown_addition +=
-                    solve_big_line_w_caching(new_statuses, new_hints, next_forbidden, cache);
+                unknown_addition += solve_big_line(new_statuses, new_hints, next_forbidden, cache);
             }
 
             unknown_addition
