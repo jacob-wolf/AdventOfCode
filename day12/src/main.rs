@@ -4,7 +4,7 @@ fn main() {
     let timer = Instant::now();
     println!("{}", part1(&"input.txt"));
     println!("{}", part2(&"input.txt"));
-    println!("{}", timer.elapsed().as_millis());
+    println!("Took {}ms", timer.elapsed().as_millis());
 }
 #[derive(Clone, Copy, Debug, PartialEq, Hash, Eq)]
 enum Status {
