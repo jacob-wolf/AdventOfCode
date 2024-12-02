@@ -18,14 +18,15 @@ fn part1(data: String) {
     });
     let mut safety_count = 0;
 
-    for (_index, line) in nums.iter().enumerate() {
+    for line in nums.iter() {
         let gaps = line
             .windows(2)
             .map(|window| window[1] - window[0])
             .collect::<Vec<i32>>();
+
         let is_ascending = gaps.iter().sum::<i32>() > 0;
         let mut is_valid = true;
-        for (_index, gap) in gaps.iter().enumerate() {
+        for gap in gaps.iter() {
             if gap.abs() < 1 || gap.abs() > 3 {
                 is_valid = false;
                 break;
@@ -53,19 +54,20 @@ fn part1(data: String) {
     println!("{safety_count}");
 }
 fn part2(data: String) {
-    // Find first problem gap and merge with its neighbor to the left
-    // detect the first problematic gap
-    // merge left with neighbor
-    // run same algorithm afterwards
+    // removing a number merges the two gaps around that number as a sum.
+
+    // filter for "problem" gaps
+    // 3 or more gaps is unfixable
+    // 2 gaps must be neighboring and merge to resolve the issue else unfixable
+    // if only gap is first or last item in list it can immediately be resolved
+    // otherwise only gap must be fixed by merging left or right
+    // zero problem gaps just return is valid
 
     // possible gaps
     // 2 -1 2 1
     // -2 -2 0 -3
     // 7 2 1 1 1 0
     // 0 1 3 3 2 2
-
-    // problem gaps are 0 or opposite from expected sign. Problem gaps that are to large with correct sign are unfixable
-
     let mut nums: Vec<Vec<i32>> = vec![];
     data.lines().for_each(|line| {
         let mut x: Vec<i32> = vec![];
@@ -76,12 +78,13 @@ fn part2(data: String) {
     });
     let mut safety_count = 0;
 
-    for (_index, line) in nums.iter().enumerate() {
+    for line in nums.iter() {
         let gaps = line
             .windows(2)
             .map(|window| window[1] - window[0])
             .collect::<Vec<i32>>();
-
+        // based on brief review of data, there's no massive outliers
+        // sum of gaps is safer than checking first gap in case it needs removal
         let is_ascending = gaps.iter().sum::<i32>() > 0;
 
         let mut is_valid = true;
@@ -105,10 +108,8 @@ fn part2(data: String) {
             // can't fix 3 invalid gaps
             is_valid = false;
         } else if l == 2 {
-            let index_0 = invalid_gaps[0].0;
-            let index_1 = invalid_gaps[1].0;
-            let gap_0 = invalid_gaps[0].1;
-            let gap_1 = invalid_gaps[1].1;
+            let (index_0, gap_0) = invalid_gaps[0];
+            let (index_1, gap_1) = invalid_gaps[1];
 
             // to fix both problem gaps need these next to each other and need them to sum to a valid gap
             let gap_distance = index_1 - index_0;
@@ -116,7 +117,7 @@ fn part2(data: String) {
             if gap_distance != 1 {
                 is_valid = false;
             } else if gap_sum.abs() > 3 || gap_sum == 0 {
-                //merging the gaps (eliminating the problem number still doesn't solve this issue)
+                // merging the gaps (eliminating the problem number still doesn't solve this issue)
                 is_valid = false;
             } else {
                 match is_ascending {
@@ -148,43 +149,32 @@ fn part2(data: String) {
             } else {
                 None
             };
-            
+
             if let None = left_neighbor_gap {
                 is_valid = true;
             } else if let None = right_neighbor_gap {
                 is_valid = true;
-            } else { 
+            } else {
                 // need to check both left and right
-                let left_gap = left_neighbor_gap.unwrap();
-                let right_gap = right_neighbor_gap.unwrap();
-
                 let check_left: bool = {
-                    let gap_sum = left_gap + problem_gap;
+                    let gap_sum = left_neighbor_gap.unwrap() + problem_gap;
                     if gap_sum.abs() > 3 || gap_sum == 0 {
                         false
                     } else {
                         match is_ascending {
-                            true => {
-                                gap_sum > 0
-                            }
-                            false => {
-                                gap_sum < 0
-                            }
+                            true => gap_sum > 0,
+                            false => gap_sum < 0,
                         }
                     }
                 };
                 let check_right: bool = {
-                    let gap_sum = right_gap + problem_gap;
+                    let gap_sum = right_neighbor_gap.unwrap() + problem_gap;
                     if gap_sum.abs() > 3 || gap_sum == 0 {
                         false
                     } else {
                         match is_ascending {
-                            true => {
-                                gap_sum > 0
-                            }
-                            false => {
-                                gap_sum < 0
-                            }
+                            true => gap_sum > 0,
+                            false => gap_sum < 0,
                         }
                     }
                 };
