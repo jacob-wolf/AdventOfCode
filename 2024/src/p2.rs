@@ -2,12 +2,12 @@ use advent_of_code_2024::{read_file, Part, Which};
 pub fn p2(choice: Which, part: Part) {
     let file_data: String = read_file(2, choice, None);
     match part {
-        Part::One => part1(file_data),
-        Part::Two => part2(file_data),
+        Part::One => part1(&file_data),
+        Part::Two => part2(&file_data),
     }
 }
 
-fn part1(data: String) {
+fn part1(data: &str) {
     let mut nums: Vec<Vec<i32>> = vec![];
     data.lines().for_each(|line| {
         let mut x: Vec<i32> = vec![];
@@ -53,7 +53,7 @@ fn part1(data: String) {
 
     println!("{safety_count}");
 }
-fn part2(data: String) {
+fn part2(data: &str) {
     // removing a number merges the two gaps around that number as a sum.
 
     // filter for "problem" gaps

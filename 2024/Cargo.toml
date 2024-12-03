@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 env-file-reader = "0.3.0"
+regex = "1.11.1"

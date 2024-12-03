@@ -4,12 +4,12 @@ use advent_of_code_2024::{read_file, Part, Which};
 pub fn p1(choice: Which, part: Part) {
     let file_data: String = read_file(1, choice, None);
     match part {
-        Part::One => part1(file_data),
-        Part::Two => part2(file_data),
+        Part::One => part1(&file_data),
+        Part::Two => part2(&file_data),
     }
 }
 
-fn part1(data: String) {
+fn part1(data: &str) {
     let mut right_list: Vec<isize> = vec![];
     let mut left_list: Vec<isize> = vec![];
 
@@ -29,7 +29,7 @@ fn part1(data: String) {
     }
     println!("{distance}");
 }
-fn part2(data: String) {
+fn part2(data: &str) {
     let mut left_to_right_map: HashMap<isize, isize> = HashMap::new();
     let mut left_list: Vec<isize> = vec![];
     data.lines().for_each(|line| {
