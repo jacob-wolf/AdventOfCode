@@ -3,6 +3,7 @@ use std::io;
 mod p1;
 mod p2;
 mod p3;
+mod p4;
 
 fn main() {
     let number = get_problem_number().unwrap();
@@ -14,6 +15,7 @@ fn main() {
         1 => p1::p1(choice, part),
         2 => p2::p2(choice, part),
         3 => p3::p3(choice, part),
+        4 => p4::p4(choice, part),
         _ => {
             if number > 25 || number < 1 {
                 panic!("Not a valid choice");

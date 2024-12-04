@@ -17,9 +17,14 @@ pub fn read_env_path() -> String {
 
 pub fn read_file(problem: u32, choice: Which, part: Option<Part>) -> String {
     let part_str = match part {
+        // since real input never changes always call it "1"
+        // since test input sometimes changes let this value help here.
         Some(val) => match val {
             Part::One => "1",
-            Part::Two => "2",
+            Part::Two => match choice {
+                Which::Real => "1",
+                Which::Test => "2",
+            },
         },
         None => "1",
     };

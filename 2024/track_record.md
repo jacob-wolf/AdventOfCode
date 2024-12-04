@@ -4,7 +4,7 @@
 | 1   |✅|✅|None|
 | 2   |✅|❌✅|Faulty method failed to remove gaps in first or last position|
 | 3   |✅|❌❌✅ |Regex for don't regions failed to account for newline characters and final dont region at end of string|
-| 4   ||||
+| 4   |❌✅|✅| Index Error in part one missed XMAS where S was in last row or col (not in test input)|
 | 5   ||||
 | 6   ||||
 | 7   ||||
