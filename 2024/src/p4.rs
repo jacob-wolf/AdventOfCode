@@ -119,10 +119,10 @@ fn part1(data: &str) {
     let mut result: usize = 0;
     //subtract one for true maximum
     let x_max = data_vec[0].len() - 1; // number of cols defines the x size
-    let y_max = data_vec.len() -1 ; // number of rows defines the y size
+    let y_max = data_vec.len() - 1; // number of rows defines the y size
     x_coords
         .iter()
-        .for_each(|coord| result += check_x(&coord, &data_vec, &x_max, &y_max)); 
+        .for_each(|coord| result += check_x(&coord, &data_vec, &x_max, &y_max));
 
     println!("{result}");
 }
