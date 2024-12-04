@@ -185,10 +185,11 @@ fn part2(data: &str) {
         .collect::<Vec<Vec<char>>>();
 
     let mut result: usize = 0;
-    let x_dim = data_vec[0].len(); // number of cols defines the x size
-    let y_dim = data_vec.len(); // number of rows defines the y size
+    // subtract one due to zero indexing (x_max is largest allowed index)
+    let x_max = data_vec[0].len() - 1; // number of cols defines the x size
+    let y_max = data_vec.len() - 1; // number of rows defines the y size
     a_coords
         .iter()
-        .for_each(|coord| result += check_a(&coord, &data_vec, &{ x_dim - 1 }, &{ y_dim - 1 }));
+        .for_each(|coord| result += check_a(&coord, &data_vec, &x_max, &y_max));
     println!("{result}");
 }
