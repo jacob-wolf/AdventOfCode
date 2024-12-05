@@ -1,6 +1,6 @@
+use advent_of_code_2024::{read_file, Part, Which};
 use std::collections::HashMap;
 
-use advent_of_code_2024::{read_file, Part, Which};
 pub fn p1(choice: Which, part: Part) {
     let file_data: String = read_file(1, choice, None);
     match part {

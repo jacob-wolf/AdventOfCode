@@ -1,5 +1,6 @@
 use advent_of_code_2024::{read_file, Part, Which};
 use regex::Regex;
+
 pub fn p3(choice: Which, part: Part) {
     let file_data: String = read_file(3, choice, Some(part));
     match part {
