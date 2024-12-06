@@ -6,7 +6,7 @@ use queues::*;
 
 fn main() {
     println!("part 1: {}", part1(&"input.txt"));
-    println!("part 2: {}", part2(&"test.txt"));
+    println!("part 2: {}", part2(&"input.txt"));
 }
 #[derive(Clone)]
 struct Part {
@@ -286,41 +286,59 @@ fn part2(path: &str) -> usize {
     let mut queue: Queue<(&Workflow, Vec<(Operation, bool)>)> = queue![];
     let _ = queue.add(first_check_item);
     let mut valid_paths: Vec<Vec<(Operation, bool)>> = vec![];
-
+    //BFS explore the entire workflow graph
     while queue.size() != 0 {
         let (curr_workflow, curr_path) = queue.remove().unwrap();
+        // ith opertion: operations 0..i get added with the false flag, operation i gets added with true flag to a clone of the path leading to this node, then this is added to the queue
+        // if the operation just points to another node add all previous operations as false and adjust the workflow node
         for (op_idx, operation) in curr_workflow.operations.iter().enumerate() {
-            if operation.if_true.eq(&"A") {
-                //in -> A
-                let mut new_valid_path = curr_path.clone();
-                for push_idx in 0..=op_idx {
-                    new_valid_path.push(curr_workflow.operations[push_idx].clone())
-                }
-                valid_paths.push(new_valid_path);
-                continue;
-            }
-            if operation.if_true.eq(&"R") {
-                //in -> R
-                continue;
-            }
-            // in -> ?
-            if curr_path.contains(operation) {
+            if curr_path
+                .iter()
+                .map(|(op, _)| op)
+                .any(|op| op.eq(&operation))
+            {
                 // cycle!
                 continue;
             }
-            // not a cycle or a dead end
             let mut new_path = curr_path.clone();
-            new_path.push(operation.clone());
-            let new_workflow = workflow_map.get(&operation.if_true).unwrap();
-            let _ = queue.add((new_workflow, new_path));
+            for prev_false_idx in 0..op_idx {
+                new_path.push((curr_workflow.operations[prev_false_idx].clone(), false))
+            }
+            if operation.if_true.eq(&"A") {
+                new_path.push((operation.clone(), true));
+                valid_paths.push(new_path);
+                continue; //path is valid add to list
+            }
+            if operation.if_true.eq(&"R") {
+                continue; //path is invalid
+            }
+            //not a cycle and not a dead end, add back to queue and continue
+            new_path.push((operation.clone(), true));
+            let next_workflow = workflow_map.get(&operation.if_true).unwrap();
+            queue.add((next_workflow, new_path)).unwrap();
         }
     }
     valid_paths.iter().enumerate().for_each(|(idx, path)| {
         println!("{idx}");
-        path.iter()
-            .for_each(|op| print!("{:?}{:?}{:?}->", op.attr, op.cmp, op.num));
-        println!("");
+        path.iter().for_each(|(op, result)| {
+            print!(
+                "{}: {:?}{:?}{:?} is {result} ->",
+                op.parent_workflow, op.attr, op.cmp, op.num
+            )
+        });
+        println!("\n\n");
     });
-    println!("{}", valid_paths.len());
+    let result = valid_paths.iter().map(|path| {
+        //how many combos on this path
+        //[x,m,a,s]
+        let mins: [usize; 4] = [1, 1, 1, 1];
+        let maxs: [usize; 4] = [4000, 4000, 4000, 4000];
+
+        
+
+        todo!()
+    });
+
+    println!("{} valid paths found", valid_paths.len());
     todo!()
 }

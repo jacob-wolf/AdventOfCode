@@ -6,7 +6,7 @@
 | 3   |✅|❌❌✅ |Regex for don't regions failed to account for newline characters and final dont region at end of string|
 | 4   |❌✅|✅| Max index Error. Missed XMAS where S was in last row or col and X->M->A->S moved towards the edge (not in test input)|
 | 5   |✅|✅|None|
-| 6   ||||
+| 6   |✅|❌✅|After identifying potential obstacle, didn't start guard from initial position, started from position that would bump obstacle. Neglected obstacle could have prevented guard from reaching curr state|
 | 7   ||||
 | 8   ||||
 | 9   ||||
