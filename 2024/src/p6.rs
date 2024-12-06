@@ -2,9 +2,14 @@ use advent_of_code_2024::{read_file, Part, Which};
 use std::collections::HashSet;
 pub fn p6(choice: Which, part: Part) {
     let file_data: String = read_file(6, choice, None);
+    let now = std::time::SystemTime::now();
     match part {
         Part::One => part1(&file_data),
         Part::Two => part2(&file_data),
+    };
+    match now.elapsed() {
+        Ok(elapsed) => println!("Runtime: {} microseconds", elapsed.as_micros()),
+        _ => panic!(),
     }
 }
 
@@ -46,17 +51,13 @@ fn right_90(dir: Direction) -> Direction {
 }
 
 /// Checks if along edges and pointing outside the boundary
-fn next_is_valid(guard_state: &GuardState, map: &Vec<Vec<CellType>>) -> bool {
-    let max_y = map.len() - 1; // N is negative y // S is positive y
-    let max_x = map[0].len() - 1; // E is positive x
-    if { guard_state.row == 0 && guard_state.direction == Direction::N }
-        || { guard_state.row == max_y && guard_state.direction == Direction::S }
-        || { guard_state.col == 0 && guard_state.direction == Direction::W }
-        || { guard_state.col == max_x && guard_state.direction == Direction::E }
-    {
-        return false;
-    }
-    true
+fn next_is_valid(guard_state: &GuardState, max_row: &usize, max_col: &usize) -> bool {
+    return !match guard_state.direction {
+        Direction::N => guard_state.row == 0,
+        Direction::S => guard_state.row == *max_row,
+        Direction::W => guard_state.col == 0,
+        Direction::E => guard_state.col == *max_col,
+    };
 }
 
 /// Obtain next guard state from curr
@@ -133,6 +134,7 @@ fn part1(data: &str) {
                 .collect::<Vec<CellType>>()
         })
         .collect::<Vec<Vec<CellType>>>();
+    let (max_row, max_col) = (map.len() - 1, map[0].len() - 1);
 
     let mut visited: HashSet<(usize, usize)> = HashSet::new();
     let mut guard_state = GuardState {
@@ -141,7 +143,7 @@ fn part1(data: &str) {
         direction: Direction::N,
     };
 
-    while next_is_valid(&guard_state, &map) {
+    while next_is_valid(&guard_state, &max_row, &max_col) {
         visited.insert((guard_state.row, guard_state.col));
         guard_state = next_guard_state(&guard_state, &map);
     }
@@ -170,7 +172,7 @@ fn part2(data: &str) {
         })
         .collect::<Vec<Vec<CellType>>>();
     let forbidden_obstacle_position = guard_position.clone();
-
+    let (max_row, max_col) = (map.len() - 1, map[0].len() - 1);
     let mut obstacle_positions: HashSet<(usize, usize)> = HashSet::new();
     let mut guard_state = GuardState {
         row: guard_position.0,
@@ -180,7 +182,7 @@ fn part2(data: &str) {
 
     let starting_guard_state = guard_state.clone();
 
-    while next_is_valid(&guard_state, &map) {
+    while next_is_valid(&guard_state, &max_row, &max_col) {
         // check if adding an obstacle to next cell creates a loop
         let new_obstacle_position = match guard_state.direction {
             Direction::N => (guard_state.row - 1, guard_state.col),
@@ -197,7 +199,7 @@ fn part2(data: &str) {
                 CellType::Obstacle;
             let mut seen_state_set: HashSet<GuardState> = HashSet::new();
             let mut potential_loop_guard_state = starting_guard_state.clone();
-            while next_is_valid(&potential_loop_guard_state, &potential_new_map) {
+            while next_is_valid(&potential_loop_guard_state, &max_row, &max_col) {
                 if !seen_state_set.insert(potential_loop_guard_state.clone()) {
                     // loop!
                     obstacle_positions.insert(new_obstacle_position);

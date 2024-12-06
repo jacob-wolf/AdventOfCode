@@ -6,6 +6,7 @@ mod p3;
 mod p4;
 mod p5;
 mod p6;
+mod p7;
 
 fn main() {
     let number = get_problem_number().unwrap();
@@ -20,6 +21,7 @@ fn main() {
         4 => p4::p4(choice, part),
         5 => p5::p5(choice, part),
         6 => p6::p6(choice, part),
+        7 => p7::p7(choice, part),
         _ => {
             if number > 25 || number < 1 {
                 panic!("Not a valid choice");
