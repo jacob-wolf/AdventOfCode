@@ -45,7 +45,7 @@ fn part1(data: &str) {
             if curr_idx == max_idx {
                 if target == curr_total + curr_num || target == curr_total * curr_num {
                     result += target;
-                    println!("{target} valid");
+
                     break;
                 }
                 continue;
@@ -108,7 +108,6 @@ fn part2(data: &str) {
                     || target == concat(curr_total, curr_num)
                 {
                     result += target;
-                    println!("{target} valid");
                     break;
                 }
                 continue;
