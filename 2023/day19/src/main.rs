@@ -1,5 +1,4 @@
 use std::{collections::HashMap, fs::read_to_string};
-#[macro_use]
 extern crate queues;
 
 use queues::*;
@@ -204,20 +203,14 @@ fn part1(path: &str) -> usize {
         .sum::<usize>();
     result
 }
-//505416 too high
-//421983 just right!
-//268050 too low
 
 fn part2(path: &str) -> usize {
     // how many combinations of ratings are valid?
-    // find ranges of x, m, a, s that lead to an A!
-    // range of 1-4000 for each
-
     // construct a Graph where each node is a workflow, A or R
     // edges are the unidirectional operations
     // traverse the graph bfs and store the edge paths in a vec
     //      if the same edge appears twice in the list discard the branch of the bfs
-    // collect all the valid paths from in to A(no cycle)
+    // collect all the valid paths from in to A (no cycles)
     // for each valid path aggregate the constraints
     // count how many parts meet the constraints
     let data = read_to_string(&path).unwrap();
@@ -318,27 +311,62 @@ fn part2(path: &str) -> usize {
             queue.add((next_workflow, new_path)).unwrap();
         }
     }
-    valid_paths.iter().enumerate().for_each(|(idx, path)| {
-        println!("{idx}");
-        path.iter().for_each(|(op, result)| {
-            print!(
-                "{}: {:?}{:?}{:?} is {result} ->",
-                op.parent_workflow, op.attr, op.cmp, op.num
-            )
-        });
-        println!("\n\n");
-    });
-    let result = valid_paths.iter().map(|path| {
-        //how many combos on this path
-        //[x,m,a,s]
-        let mins: [usize; 4] = [1, 1, 1, 1];
-        let maxs: [usize; 4] = [4000, 4000, 4000, 4000];
-
-        
-
-        todo!()
-    });
+    let result = valid_paths
+        .iter()
+        .map(|path| {
+            let mut mins: [usize; 4] = [1, 1, 1, 1];
+            let mut maxs: [usize; 4] = [4000, 4000, 4000, 4000];
+            // apply constraints
+            for (operation, truthiness) in path {
+                if let None = operation.attr {
+                    continue;
+                }
+                let op_idx: usize = match operation.attr.unwrap() {
+                    'x' => 0,
+                    'm' => 1,
+                    'a' => 2,
+                    's' => 3,
+                    _ => panic!(),
+                };
+                let op_value = operation.num.unwrap();
+                match operation.cmp.unwrap() {
+                    '<' => {
+                        // idx < num
+                        if *truthiness {
+                            maxs[op_idx] = op_value - 1;
+                        }
+                        // idx >= num
+                        else {
+                            mins[op_idx] = op_value;
+                        }
+                    }
+                    '>' => {
+                        // idx > num
+                        if *truthiness {
+                            mins[op_idx] = op_value + 1;
+                        }
+                        // idx <= num
+                        else {
+                            maxs[op_idx] = op_value;
+                        }
+                    }
+                    _ => panic!(),
+                }
+            }
+            let mut product: usize = 1;
+            for i in 0..4 {
+                let min = mins[i];
+                let max = maxs[i];
+                // 0 valid values for this path
+                if max <= min {
+                    return 0;
+                }
+                product *= max - min + 1; // counting 1-4000 is 4000 => max-min+1
+            }
+            product
+        })
+        .sum::<usize>();
 
     println!("{} valid paths found", valid_paths.len());
-    todo!()
+    result
 }
