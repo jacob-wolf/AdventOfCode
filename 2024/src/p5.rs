@@ -3,6 +3,7 @@ use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
 };
+
 pub fn p5(choice: Which, part: Part) {
     let file_data: String = read_file(5, choice, None);
     let now = std::time::SystemTime::now();
