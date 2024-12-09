@@ -8,8 +8,8 @@
 | 5   |✅|✅|None|
 | 6   |✅|❌✅|After identifying potential obstacle, didn't start guard from initial position, started from position that would bump obstacle. Neglected obstacle could have prevented guard from reaching curr state|
 | 7   |❌✅|✅| Faulty continue clause when checking if grew larger than target.|
-| 8   ||||
-| 9   ||||
+| 8   |✅|✅|Thought three Ts text box was a second input and spent time debugging it (it wasn't an input)|
+| 9   |✅|✅| None |
 | 10  ||||
 | 11  ||||
 | 12  ||||
