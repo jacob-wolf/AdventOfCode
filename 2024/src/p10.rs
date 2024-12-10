@@ -23,13 +23,11 @@ fn get_increasing_neighbors(
 ) -> Vec<(usize, usize)> {
     let mut positions = vec![];
     if row > &0 {
-        // check left
         if map[row - 1][*col] == map[*row][*col] + 1 {
             positions.push((*row - 1, *col));
         }
     }
     if row < max_row {
-        // check left
         if map[row + 1][*col] == map[*row][*col] + 1 {
             positions.push((*row + 1, *col));
         }
@@ -72,9 +70,9 @@ fn part1(data: &str) {
 
     let mut ans: usize = 0;
 
-    for trailhead in trailheads.iter() {
+    for trailhead in trailheads.into_iter() {
         let mut problems: Vec<(usize, usize)> = vec![];
-        problems.push(trailhead.clone());
+        problems.push(trailhead);
         let mut nines: HashSet<(usize, usize)> = HashSet::new();
         while !problems.is_empty() {
             let (curr_row, curr_col) = problems.pop().unwrap();
@@ -83,8 +81,8 @@ fn part1(data: &str) {
             }
             let branches = get_increasing_neighbors(&curr_row, &curr_col, &max_row, &max_col, &map);
 
-            branches.iter().for_each(|branch| {
-                problems.push(branch.clone());
+            branches.into_iter().for_each(|branch| {
+                problems.push(branch);
             });
         }
         ans += nines.len();
@@ -94,7 +92,6 @@ fn part1(data: &str) {
 }
 
 fn part2(data: &str) {
-    // just remove the set and add every path ending at 9
     let mut trailheads: Vec<(usize, usize)> = vec![];
 
     let map = data
@@ -119,9 +116,9 @@ fn part2(data: &str) {
 
     let mut ans: usize = 0;
 
-    for trailhead in trailheads.iter() {
+    for trailhead in trailheads.into_iter() {
         let mut problems: Vec<(usize, usize)> = vec![];
-        problems.push(trailhead.clone());
+        problems.push(trailhead);
         while !problems.is_empty() {
             let (curr_row, curr_col) = problems.pop().unwrap();
             if map[curr_row][curr_col].eq(&9) {
@@ -129,8 +126,8 @@ fn part2(data: &str) {
             }
             let branches = get_increasing_neighbors(&curr_row, &curr_col, &max_row, &max_col, &map);
 
-            branches.iter().for_each(|branch| {
-                problems.push(branch.clone());
+            branches.into_iter().for_each(|branch| {
+                problems.push(branch);
             });
         }
     }
