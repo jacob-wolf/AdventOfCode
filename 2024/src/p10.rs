@@ -1,6 +1,5 @@
-use std::collections::{HashMap, HashSet};
-
 use advent_of_code_2024::{read_file, Part, Which};
+use std::collections::HashSet;
 
 pub fn p10(choice: Which, part: Part) {
     let file_data: String = read_file(10, choice, None);
@@ -49,7 +48,7 @@ fn get_increasing_neighbors(
 }
 
 fn part1(data: &str) {
-    let mut trailheads: HashMap<(usize, usize), usize> = HashMap::new();
+    let mut trailheads: Vec<(usize, usize)> = vec![];
 
     let map = data
         .lines()
@@ -60,7 +59,7 @@ fn part1(data: &str) {
                 .map(|(col, chr)| {
                     let val = chr.to_digit(10).unwrap() as usize;
                     if val == 0 {
-                        trailheads.insert((row, col), 0);
+                        trailheads.push((row, col));
                     }
                     val
                 })
@@ -73,7 +72,7 @@ fn part1(data: &str) {
 
     let mut ans: usize = 0;
 
-    for trailhead in trailheads.keys() {
+    for trailhead in trailheads.iter() {
         let mut problems: Vec<(usize, usize)> = vec![];
         problems.push(trailhead.clone());
         let mut nines: HashSet<(usize, usize)> = HashSet::new();
@@ -96,7 +95,7 @@ fn part1(data: &str) {
 
 fn part2(data: &str) {
     // just remove the set and add every path ending at 9
-    let mut trailheads: HashMap<(usize, usize), usize> = HashMap::new();
+    let mut trailheads: Vec<(usize, usize)> = vec![];
 
     let map = data
         .lines()
@@ -107,7 +106,7 @@ fn part2(data: &str) {
                 .map(|(col, chr)| {
                     let val = chr.to_digit(10).unwrap() as usize;
                     if val == 0 {
-                        trailheads.insert((row, col), 0);
+                        trailheads.push((row, col));
                     }
                     val
                 })
@@ -120,7 +119,7 @@ fn part2(data: &str) {
 
     let mut ans: usize = 0;
 
-    for trailhead in trailheads.keys() {
+    for trailhead in trailheads.iter() {
         let mut problems: Vec<(usize, usize)> = vec![];
         problems.push(trailhead.clone());
         while !problems.is_empty() {
