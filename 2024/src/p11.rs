@@ -106,7 +106,7 @@ fn part2(data: &str) {
     });
 
     let mut blinks = 0;
-    while blinks < 25 {
+    while blinks < 75 {
         blinks += 1;
         let mut next_rocks_map: HashMap<usize, usize> = HashMap::new();
 
