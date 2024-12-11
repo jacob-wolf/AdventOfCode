@@ -2,6 +2,7 @@ use advent_of_code_2024::{Part, Which};
 use std::io;
 mod p1;
 mod p10;
+mod p11;
 mod p2;
 mod p3;
 mod p4;
@@ -28,6 +29,7 @@ fn main() {
         8 => p8::p8(choice, part),
         9 => p9::p9(choice, part),
         10 => p10::p10(choice, part),
+        11 => p11::p11(choice, part),
         _ => {
             if number > 25 || number < 1 {
                 panic!("Not a valid choice");

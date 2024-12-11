@@ -10,8 +10,8 @@
 | 7   |❌✅|✅| Faulty continue clause when checking if grew larger than target.|
 | 8   |✅|✅|Thought three Ts text box was a second input and spent time debugging it (it wasn't an input)|
 | 9   |✅|✅| None |
-| 10  ||||
-| 11  ||||
+| 10  |✅|✅| Solved Part 2 by accident when attempting part 1, part 2 faster?|
+| 11  |❌✅|✅| Forgot to account for splits producing 0s on the RHS. Then the num str needs be length 1. Needed to completely reformulate to reduce operations to unique numbers instead of calculating stone by stone|
 | 12  ||||
 | 13  ||||
 | 14  ||||
