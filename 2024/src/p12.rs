@@ -30,7 +30,6 @@ fn explore_region(
         if !new_coord {
             continue;
         }
-        // check if neighbors part of region
         if curr_row > 0 && map[curr_row - 1][curr_col].eq(&target) {
             problems.push(({ curr_row - 1 }, curr_col));
         }
@@ -49,7 +48,6 @@ fn explore_region(
 }
 
 fn calculate_perimiter(region: &HashSet<(usize, usize)>) -> usize {
-    // every letter contributes 4 - num same neighbors
     region
         .iter()
         .map(|item| {
@@ -206,7 +204,6 @@ fn get_next_border_state(
             },
         );
     } else {
-        // only has block in opposite of curr direction just keep rotating cw until can move
         return (cw(direction), (*curr_row, *curr_col));
     }
 }
@@ -231,10 +228,6 @@ fn get_next_hole_border_state(
     region: &HashSet<(usize, usize)>,
     direction: &Direction,
 ) -> (Direction, (usize, usize)) {
-    // now doing external border...
-    // if I can't go clockwise try to go straight
-    // if can't go straight try to go ccw
-    // if can't go ccw doesn't make sense...
     if hole_in_direction(curr_row, curr_col, region, &ccw(direction)) {
         return (
             ccw(direction),
@@ -351,13 +344,10 @@ fn calculate_side_count(region: &HashSet<(usize, usize)>) -> usize {
         return side_changes;
     }
     let mut seen_hole_positions: HashSet<(usize, usize)> = HashSet::new();
-    // need to traverse the holes inside the border the same way
-    // first order of business find the missing holes!
     let mut found_holes = filtered_missing_neighbors_internally
         .iter()
         .map(|point| {
             let mut holes = vec![];
-            // check four neighbors for holes
             if hole_in_direction(&point.0, &point.1, region, &Direction::Pr) {
                 holes.push((point.0 + 1, point.1));
             }

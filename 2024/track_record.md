@@ -13,7 +13,7 @@
 | 10  |✅|✅| Solved Part 2 by accident when attempting part 1, part 2 faster?|
 | 11  |❌✅|✅| Forgot to account for splits producing 0s on the RHS. Then the num str needs be length 1. Needed to completely reformulate to reduce operations to unique numbers instead of calculating stone by stone|
 | 12  |✅|❌✅| Missed a single 1 cell internal border because it was surrounded by the external border of another group. Soooo much debugging. Count the corners next time instead of following the borders.... corners = sides.|
-| 13  ||||
+| 13  |❌✅|❌✅|Ignored Floating Point Error requiring round up from .999 in part 1. In part 2, realized floating point error filter condition was too strict, reduced it from 5 decimal places to 3|
 | 14  ||||
 | 15  ||||
 | 16  ||||
