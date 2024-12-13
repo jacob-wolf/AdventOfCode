@@ -12,7 +12,7 @@
 | 9   |✅|✅| None |
 | 10  |✅|✅| Solved Part 2 by accident when attempting part 1, part 2 faster?|
 | 11  |❌✅|✅| Forgot to account for splits producing 0s on the RHS. Then the num str needs be length 1. Needed to completely reformulate to reduce operations to unique numbers instead of calculating stone by stone|
-| 12  ||||
+| 12  |✅|❌✅| Missed a single 1 cell internal border because it was surrounded by the external border of another group. Soooo much debugging. Count the corners next time instead of following the borders.... corners = sides.|
 | 13  ||||
 | 14  ||||
 | 15  ||||

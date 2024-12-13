@@ -73,9 +73,6 @@ fn calculate_perimiter(region: &HashSet<(usize, usize)>) -> usize {
 }
 
 fn part1(data: &str) {
-    // area * peri for every region
-    // region is a set of points of same value separated by distance 1
-    // search the data for various regions
     let map = data
         .lines()
         .map(|line| line.chars().collect::<Vec<char>>())
@@ -88,8 +85,6 @@ fn part1(data: &str) {
     let mut ans: usize = 0;
     map.iter().enumerate().for_each(|(row, row_data)| {
         row_data.iter().enumerate().for_each(|(col, _chr)| {
-            // check if this point is part of an explored region if so continue
-            // else explore the region and add it to the region map
             if !seen_points.contains(&(row, col)) {
                 let region = explore_region(&row, &col, &max_row, &max_col, &map);
                 region.iter().for_each(|item| {
@@ -104,7 +99,7 @@ fn part1(data: &str) {
 
     println!("{ans}");
 }
-#[derive(Hash, PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(Hash, PartialEq, Eq, Clone, Copy)]
 enum Direction {
     Pr,
     Nr,
@@ -151,7 +146,6 @@ fn get_next_border_state(
     direction: &Direction,
     potential_holes: &mut HashSet<(usize, usize)>,
 ) -> (Direction, (usize, usize)) {
-    // if go straight but cant go cw (until later...) there is a hole to the right...
     if block_in_direction(curr_row, curr_col, region, &ccw(direction)) {
         return (
             ccw(direction),
@@ -212,8 +206,7 @@ fn get_next_border_state(
             },
         );
     } else {
-        // only has block in opposite of curr direction just keep rotating cw until can move and rotate ccw
-        //println!("No blocks in any direction!");
+        // only has block in opposite of curr direction just keep rotating cw until can move
         return (cw(direction), (*curr_row, *curr_col));
     }
 }
@@ -273,8 +266,6 @@ fn get_next_hole_border_state(
             },
         );
     } else {
-        // only has block in opposite of curr direction just keep rotating cw until can move and rotate ccw
-        //println!("No blocks in any direction!");
         return (cw(direction), (*curr_row, *curr_col));
     }
 }
@@ -294,11 +285,11 @@ fn calculate_side_count(region: &HashSet<(usize, usize)>) -> usize {
         })
         .unwrap()
         .clone();
+    // don't even ask why this is here just know it's needed
     let mut potential_holes: HashSet<(usize, usize)> = HashSet::new();
 
     let mut curr_direction = Direction::Pc;
     while !seen_positions.contains(&(curr_direction, curr_position)) {
-        //println!("{curr_direction:?}, {curr_position:?}");
         seen_positions.insert((curr_direction, curr_position.clone()));
         let (next_direction, next_position) = get_next_border_state(
             &curr_position.0,
@@ -405,7 +396,6 @@ fn calculate_side_count(region: &HashSet<(usize, usize)>) -> usize {
             curr_hole_direction = Direction::Nc;
         }
         let mut curr_hole_position = hole.clone();
-        //println!("Checking hole region @ {hole:?}={}", map[hole.0][hole.1]);
         while !curr_seen_holes_set.contains(&(curr_hole_direction, curr_hole_position)) {
             curr_seen_holes_set.insert((curr_hole_direction, curr_hole_position));
             let (next_hole_direction, next_hole_position) = get_next_hole_border_state(
@@ -428,7 +418,6 @@ fn calculate_side_count(region: &HashSet<(usize, usize)>) -> usize {
                 seen_hole_positions.insert(coord.clone());
             });
     }
-    //println!("Region had {side_changes} sides");
     side_changes
 }
 
@@ -440,7 +429,6 @@ fn part2(data: &str) {
 
     let max_row = map.len() - 1;
     let max_col = map[0].len() - 1;
-
     let mut seen_points: HashSet<(usize, usize)> = HashSet::new();
     let mut ans: usize = 0;
     map.iter().enumerate().for_each(|(row, row_data)| {
@@ -459,6 +447,3 @@ fn part2(data: &str) {
 
     println!("{ans}");
 }
-// 859494 just right!
-// 859042 too low
-// 842485 too low
