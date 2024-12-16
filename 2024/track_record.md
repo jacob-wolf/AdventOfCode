@@ -16,7 +16,7 @@
 | 13  |❌✅|❌✅|Ignored Floating Point Error requiring round up from .999 in part 1. In part 2, realized floating point error filter condition was too strict, reduced it from 5 decimal places to 3|
 | 14  |❌✅|✅|Flipped the rows and columns for mod operator... READ THE PROBLEM!|
 | 15  |✅|✅| None |
-| 16  ||||
+| 16  |✅|❌✅|Excluded equivalent paths due turn score discrepancies. Two paths could reach the same point with different amounts of turns, but reach the end point with same score.|
 | 17  ||||
 | 18  ||||
 | 19  ||||
