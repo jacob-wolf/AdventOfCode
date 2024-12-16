@@ -72,7 +72,6 @@ fn part1(data: &str) {
             later_pos.1 += rows;
         }
 
-        println!("{pos:?} -> {later_pos:?}");
         let index = find_quadrant_index(&row_mid, &col_mid, &later_pos.1, &later_pos.0);
         match index {
             Some(idx) => quadrant_counts[idx] += 1,
