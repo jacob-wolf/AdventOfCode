@@ -99,38 +99,24 @@ fn compute(
     return None;
 }
 
-
 fn part1(data: &str) {
-    let mut a = data
-        .lines()
-        .nth(0)
-        .unwrap()
-        .split(':')
-        .nth(1)
-        .unwrap()
-        .trim()
-        .parse::<usize>()
-        .unwrap();
-    let mut b: usize = data
-        .lines()
-        .nth(1)
-        .unwrap()
-        .split(':')
-        .nth(1)
-        .unwrap()
-        .trim()
-        .parse::<usize>()
-        .unwrap();
-    let mut c: usize = data
-        .lines()
-        .nth(2)
-        .unwrap()
-        .split(':')
-        .nth(1)
-        .unwrap()
-        .trim()
-        .parse::<usize>()
-        .unwrap();
+    let abc = (0..=2)
+        .map(|idx| {
+            data.lines()
+                .nth(idx)
+                .unwrap()
+                .split(':')
+                .nth(1)
+                .unwrap()
+                .trim()
+                .parse::<usize>()
+                .unwrap()
+        })
+        .collect::<Vec<usize>>();
+
+    let mut a = abc[0];
+    let mut b: usize = abc[1];
+    let mut c: usize = abc[2];
     let mut switch: bool = true;
     let mut ops = vec![];
     let mut oprs = vec![];
