@@ -9,6 +9,7 @@ mod p14;
 mod p15;
 mod p16;
 mod p17;
+mod p18;
 mod p2;
 mod p3;
 mod p4;
@@ -42,6 +43,7 @@ fn main() {
         15 => p15::p15(choice, part),
         16 => p16::p16(choice, part),
         17 => p17::p17(choice, part),
+        18 => p18::p18(choice, part),
         _ => {
             if number > 25 || number < 1 {
                 panic!("Not a valid choice");

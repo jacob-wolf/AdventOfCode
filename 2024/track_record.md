@@ -18,7 +18,7 @@
 | 15  |✅|✅| None |
 | 16  |✅|❌✅|Excluded equivalent paths due turn score discrepancies. Two paths could reach the same point with different amounts of turns, but reach the end point with same score.|
 | 17  |✅|❌✅|Attempted to just guess 8^16. Then realized could work backwards given values of B and C are reset each iteration in real data and not used in test data.|
-| 18  ||||
+| 18  |✅|✅|None|
 | 19  ||||
 | 20  ||||
 | 21  ||||
