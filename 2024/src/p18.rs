@@ -15,7 +15,6 @@ pub fn p18(choice: Which, part: Part) {
     }
 }
 
-#[derive(Debug)]
 enum Dir {
     Pr,
     Pc,
@@ -217,6 +216,5 @@ fn part2(data: &str) {
             upper = mid;
         }
     }
-    println!("{lower}, {upper}, {mid}");
     println!("{},{}", bytes_to_fall[lower].0, bytes_to_fall[lower].1);
 }
