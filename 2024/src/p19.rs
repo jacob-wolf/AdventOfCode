@@ -1,4 +1,5 @@
 use advent_of_code_2024::{read_file, Part, Which};
+
 pub fn p19(choice: Which, part: Part) {
     let file_data: String = read_file(19, choice, None);
     let now = std::time::SystemTime::now();
@@ -12,6 +13,66 @@ pub fn p19(choice: Which, part: Part) {
     }
 }
 
-fn part1(data: &str) {}
+fn part1(data: &str) {
+    let towels = data
+        .lines()
+        .nth(0)
+        .unwrap()
+        .split(',')
+        .map(|towel| towel.trim().chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+    let desired = data
+        .lines()
+        .skip(2)
+        .map(|line| line.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+    let mut solution_count = 0;
 
-fn part2(data: &str) {}
+    desired.iter().for_each(|target| {
+        let mut count_by_idx = vec![false; target.len() + 1];
+        count_by_idx[0] = true;
+
+        for idx in 1..target.len() + 1 {
+            for word in towels.iter() {
+                if idx >= word.len() && target[idx - word.len()..idx].eq(&word[..]) {
+                    count_by_idx[idx] = count_by_idx[idx] || count_by_idx[idx - word.len()];
+                }
+            }
+        }
+        solution_count += match count_by_idx[target.len()] {
+            true => 1,
+            false => 0,
+        }
+    });
+    println!("{solution_count}");
+}
+
+fn part2(data: &str) {
+    let towels = data
+        .lines()
+        .nth(0)
+        .unwrap()
+        .split(',')
+        .map(|towel| towel.trim().chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+    let desired = data
+        .lines()
+        .skip(2)
+        .map(|line| line.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+    let mut solution_count = 0;
+    desired.iter().for_each(|target| {
+        let mut count_by_idx = vec![0 as usize; target.len() + 1];
+        count_by_idx[0] = 1; // 1 way to reach idx 0
+
+        for idx in 1..target.len() + 1 {
+            for word in towels.iter() {
+                if idx >= word.len() && target[idx - word.len()..idx].eq(&word[..]) {
+                    count_by_idx[idx] += count_by_idx[idx - word.len()];
+                }
+            }
+        }
+        solution_count += count_by_idx[target.len()];
+    });
+    println!("{solution_count}");
+}
