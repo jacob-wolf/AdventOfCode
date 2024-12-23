@@ -29,17 +29,17 @@ fn part1(data: &str) {
     let mut solution_count = 0;
 
     desired.iter().for_each(|target| {
-        let mut count_by_idx = vec![false; target.len() + 1];
-        count_by_idx[0] = true;
+        let mut reachable_by_idx = vec![false; target.len() + 1];
+        reachable_by_idx[0] = true;
 
         for idx in 1..target.len() + 1 {
-            for word in towels.iter() {
-                if idx >= word.len() && target[idx - word.len()..idx].eq(&word[..]) {
-                    count_by_idx[idx] = count_by_idx[idx] || count_by_idx[idx - word.len()];
+            for towel in towels.iter() {
+                if idx >= towel.len() && target[idx - towel.len()..idx].eq(&towel[..]) {
+                    reachable_by_idx[idx] = reachable_by_idx[idx] || reachable_by_idx[idx - towel.len()];
                 }
             }
         }
-        solution_count += match count_by_idx[target.len()] {
+        solution_count += match reachable_by_idx[target.len()] {
             true => 1,
             false => 0,
         }
@@ -66,9 +66,9 @@ fn part2(data: &str) {
         count_by_idx[0] = 1; // 1 way to reach idx 0
 
         for idx in 1..target.len() + 1 {
-            for word in towels.iter() {
-                if idx >= word.len() && target[idx - word.len()..idx].eq(&word[..]) {
-                    count_by_idx[idx] += count_by_idx[idx - word.len()];
+            for towel in towels.iter() {
+                if idx >= towel.len() && target[idx - towel.len()..idx].eq(&towel[..]) {
+                    count_by_idx[idx] += count_by_idx[idx - towel.len()];
                 }
             }
         }
