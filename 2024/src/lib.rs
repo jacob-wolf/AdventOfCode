@@ -10,7 +10,9 @@ pub enum Part {
     Two,
 }
 pub fn read_env_path() -> String {
-    let env_variables = env_file_reader::read_file(".env").unwrap();
+    let env_variables = env_file_reader::read_file(".env").unwrap_or_else(|_e| {
+        panic!("Couldn't find the .env file!");
+    });
     let path = &env_variables["FILE_DATA_PATH"];
     path.clone()
 }
