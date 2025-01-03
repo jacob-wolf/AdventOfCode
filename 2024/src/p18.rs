@@ -171,9 +171,9 @@ fn part2(data: &str) {
 
     let mut lower = 1024; // 12 in test
     let mut upper = bytes_to_fall.len() - 1;
-    let mut mid = { upper - lower } / 2 + lower;
+
     while lower + 1 < upper {
-        mid = { upper - lower } / 2 + lower;
+        let mid = { upper - lower } / 2 + lower;
         let mut grid = HashSet::new();
         for idx in 0..mid {
             drop_byte(&bytes_to_fall[idx], &mut grid);

@@ -1,5 +1,6 @@
 use advent_of_code_2024::{read_file, Part, Which};
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::Hash};
+
 pub fn p21(choice: Which, part: Part) {
     let file_data: String = read_file(21, choice, None);
     let now = std::time::SystemTime::now();
@@ -26,7 +27,7 @@ enum NumPad {
     Zero,
     A,
 }
-#[derive(Clone, Copy, Hash, Eq, PartialEq)]
+#[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
 enum KeyPad {
     Left,
     Right,
@@ -61,115 +62,116 @@ fn get_key_pad_coord(target: &KeyPad) -> (usize, usize) {
     }
 }
 
-fn get_numpad_directions(
-    item: &NumPad,
-    start_position: &(usize, usize),
-    computed: &mut HashMap<((usize, usize), (usize, usize)), Vec<KeyPad>>,
-) -> Vec<KeyPad> {
-    const INVALID_POSITION: (usize, usize) = (3, 0);
-
-    let target_position = get_num_pad_coord(&item);
-
-    if let Some(val) = computed.get(&(*start_position, target_position)) {
-        return val.clone();
-    }
-
-    let mut curr_position = start_position.clone();
-    let mut key_pad_required = vec![];
-    // loop to press arrow keys until target num is hovered
-    while curr_position.ne(&target_position) {
-        if curr_position.0 < target_position.0
-            && INVALID_POSITION.ne(&(curr_position.0 + 1, curr_position.1))
-        {
-            curr_position = (curr_position.0 + 1, curr_position.1);
-            key_pad_required.push(KeyPad::Down);
-        } else if curr_position.0 > target_position.0 {
-            curr_position = (curr_position.0 - 1, curr_position.1);
-            key_pad_required.push(KeyPad::Up);
-        } else if curr_position.1 > target_position.1
-            && INVALID_POSITION.ne(&(curr_position.0, curr_position.1 - 1))
-        {
-            curr_position = (curr_position.0, curr_position.1 - 1);
-            key_pad_required.push(KeyPad::Left);
+fn numpad_instructions(targets: &Vec<NumPad>) -> Vec<KeyPad> {
+    let mut curr_position = get_num_pad_coord(&NumPad::A);
+    let mut dir_pad = vec![];
+    targets.iter().for_each(|target| {
+        // priority check
+        let target_position = get_num_pad_coord(&target);
+        let mut dr = if target_position.0 > curr_position.0 {
+            (0..target_position.0 - curr_position.0)
+                .map(|_| KeyPad::Down)
+                .collect::<Vec<KeyPad>>()
         } else {
-            curr_position = (curr_position.0, curr_position.1 + 1);
-            key_pad_required.push(KeyPad::Right);
+            (0..curr_position.0 - target_position.0)
+                .map(|_| KeyPad::Up)
+                .collect::<Vec<KeyPad>>()
+        };
+        let mut dc = if target_position.1 > curr_position.1 {
+            (0..target_position.1 - curr_position.1)
+                .map(|_| KeyPad::Right)
+                .collect::<Vec<KeyPad>>()
+        } else {
+            (0..curr_position.1 - target_position.1)
+                .map(|_| KeyPad::Left)
+                .collect::<Vec<KeyPad>>()
+        };
+        if target_position.1 > curr_position.1 && (target_position.0, curr_position.1) != (3, 0) {
+            // going to move right and can move vertically first
+            dir_pad.append(&mut dr);
+            dir_pad.append(&mut dc);
+        } else if (curr_position.0, target_position.1) != (3, 0) {
+            dir_pad.append(&mut dc);
+            dir_pad.append(&mut dr);
+        } else {
+            dir_pad.append(&mut dr);
+            dir_pad.append(&mut dc);
         }
-    }
-    // finally press A to enter the number
-    key_pad_required.push(KeyPad::A);
-
-    computed.insert((*start_position, curr_position), key_pad_required.clone());
-
-    key_pad_required
+        dir_pad.push(KeyPad::A);
+        curr_position = target_position;
+    });
+    dir_pad
 }
 
-fn get_keypad_directions(
-    desired: &Vec<KeyPad>,
-    computed: &mut HashMap<(KeyPad, KeyPad), Vec<KeyPad>>,
+fn keypad_instructions(
+    targets: &Vec<KeyPad>,
+    cache: &mut HashMap<((usize, usize), (usize, usize)), Vec<KeyPad>>,
 ) -> Vec<KeyPad> {
-    // want to minimize number of steps
-    // if i last pressed left prio left aka nearby keys
-    //const INVALID_POSITION: (usize, usize) = (0, 0);
-    let mut higher_level_directions = vec![];
-    let mut last_input_num = KeyPad::A;
-    for desire in desired {
-        if let Some(instructions) = computed.get(&(KeyPad::A, *desire)) {
-            for item in instructions {
-                higher_level_directions.push(item.clone());
-            }
-            last_input_num = desire.clone();
-            continue;
+    let mut curr_position = get_key_pad_coord(&KeyPad::A);
+    let mut dir_pad = vec![];
+    targets.iter().for_each(|target| {
+        let target_position = get_key_pad_coord(&target);
+        if let Some(cached) = cache.get(&(curr_position, target_position)) {
+            dir_pad.append(&mut cached.clone());
+            curr_position = target_position;
+            //println!("Cache Hit! {curr_position:?} -> {target_position:?} = {cached:?}");
+            return;
         }
 
-        let curr_position = get_key_pad_coord(&last_input_num); // always going to start from A
-        let target_position = get_key_pad_coord(desire);
+        let mut dr = if target_position.0 > curr_position.0 {
+            (0..target_position.0 - curr_position.0)
+                .map(|_| KeyPad::Down)
+                .collect::<Vec<KeyPad>>()
+        } else {
+            (0..curr_position.0 - target_position.0)
+                .map(|_| KeyPad::Up)
+                .collect::<Vec<KeyPad>>()
+        };
+        let mut dc = if target_position.1 > curr_position.1 {
+            (0..target_position.1 - curr_position.1)
+                .map(|_| KeyPad::Right)
+                .collect::<Vec<KeyPad>>()
+        } else {
+            (0..curr_position.1 - target_position.1)
+                .map(|_| KeyPad::Left)
+                .collect::<Vec<KeyPad>>()
+        };
+        let mut to_cache = vec![];
+        if target_position.1 > curr_position.1 && (target_position.0, curr_position.1) != (0, 0) {
+            // going to move right and can move vertically first
+            dir_pad.append(&mut dr.clone());
+            to_cache.append(&mut dr);
 
-        let mut computed_instructions = vec![];
+            dir_pad.append(&mut dc.clone());
+            to_cache.append(&mut dc);
+        } else if (curr_position.0, target_position.1) != (0, 0) {
+            // can move horizontally first
+            dir_pad.append(&mut dc.clone());
+            to_cache.append(&mut dc);
 
-        let (dy, dx) = (
-            target_position.0 as isize - curr_position.0 as isize,
-            target_position.1 as isize - curr_position.1 as isize,
-        );
-        // prio > ^ v <
-        if dx > 0 {
-            for _ in 0..dx {
-                computed_instructions.push(KeyPad::Right);
-            }
+            dir_pad.append(&mut dr.clone());
+            to_cache.append(&mut dr);
+        } else {
+            // moving left and can move vertically first
+            dir_pad.append(&mut dr.clone());
+            to_cache.append(&mut dr);
+
+            dir_pad.append(&mut dc.clone());
+            to_cache.append(&mut dc);
         }
+        dir_pad.push(KeyPad::A);
+        to_cache.push(KeyPad::A);
+        cache.insert((curr_position, target_position), to_cache);
+        curr_position = target_position;
+    });
 
-        if dy < 0 {
-            for _ in 0..dy.abs() {
-                computed_instructions.push(KeyPad::Up);
-            }
-        }
-
-        if dy > 0 {
-            for _ in 0..dy.abs() {
-                computed_instructions.push(KeyPad::Down);
-            }
-        }
-
-        if dx < 0 {
-            for _ in 0..dx.abs() {
-                computed_instructions.push(KeyPad::Left);
-            }
-        }
-
-        computed_instructions.push(KeyPad::A);
-        computed.insert((KeyPad::A, *desire), computed_instructions.clone());
-        last_input_num = desire.clone();
-    }
-
-    higher_level_directions
+    dir_pad
 }
 
 fn part1(data: &str) {
-    let mut computed_num_pads = HashMap::new();
-    let mut computed_key_pads = HashMap::new();
     let mut ans: usize = 0;
     data.lines().for_each(|line| {
-        let target_sequence = line
+        let num_bot = line
             .trim()
             .chars()
             .map(|chr| match chr {
@@ -188,42 +190,131 @@ fn part1(data: &str) {
             })
             .collect::<Vec<NumPad>>();
 
-        let mut numpad_bot = get_num_pad_coord(&NumPad::A);
-        let mut my_press_count: usize = 0;
-
-        for target in target_sequence {
-            // target is what first bot must press
-            // second bot must press first bot directions
-            let first_bot_directions =
-                get_numpad_directions(&target, &numpad_bot, &mut computed_num_pads);
-            // third bot must press second bot directions
-            let second_bot_directions =
-                get_keypad_directions(&first_bot_directions, &mut computed_key_pads);
-            // i press third bot directions
-            let what_i_press =
-                get_keypad_directions(&second_bot_directions, &mut computed_key_pads);
-            my_press_count += what_i_press.len();
-            first_bot_directions.iter().for_each(|pre| {
-                let v = match pre {
-                    KeyPad::Left => '<',
-                    KeyPad::Right => '>',
-                    KeyPad::Up => '^',
-                    KeyPad::Down => 'v',
-                    KeyPad::A => 'A',
-                };
-                print!("{v}");
-            });
-            println!("");
-            numpad_bot = get_num_pad_coord(&target);
-        }
+        let keypad_bot_one = numpad_instructions(&num_bot);
+        let mut cache: HashMap<((usize, usize), (usize, usize)), Vec<KeyPad>> = HashMap::new();
+        let keypad_bot_two = keypad_instructions(&keypad_bot_one, &mut cache);
+        let keypad_bot_three = keypad_instructions(&keypad_bot_two, &mut cache);
+        let my_press_count: usize = keypad_bot_three.len();
 
         let target_numeric = line.trim()[0..3].parse::<usize>().unwrap();
         println!("For {line}, {my_press_count} * {target_numeric}");
 
         ans += target_numeric * my_press_count;
-
-        // what do I hit to get each number
     });
     println!("{ans}");
 }
-fn part2(data: &str) {}
+
+fn part2_get_keypad(start: &KeyPad, end: &KeyPad) -> Vec<KeyPad> {
+    let mut res = vec![];
+    let curr_position = get_key_pad_coord(&start);
+    let target_position = get_key_pad_coord(&end);
+    let dr = if target_position.0 > curr_position.0 {
+        (0..target_position.0 - curr_position.0)
+            .map(|_| KeyPad::Down)
+            .collect::<Vec<KeyPad>>()
+    } else {
+        (0..curr_position.0 - target_position.0)
+            .map(|_| KeyPad::Up)
+            .collect::<Vec<KeyPad>>()
+    };
+    let dc = if target_position.1 > curr_position.1 {
+        (0..target_position.1 - curr_position.1)
+            .map(|_| KeyPad::Right)
+            .collect::<Vec<KeyPad>>()
+    } else {
+        (0..curr_position.1 - target_position.1)
+            .map(|_| KeyPad::Left)
+            .collect::<Vec<KeyPad>>()
+    };
+    if target_position.1 > curr_position.1 && (target_position.0, curr_position.1) != (0, 0) {
+        // going to move right and can move vertically first
+        res.append(&mut dr.clone());
+        res.append(&mut dc.clone());
+    } else if (curr_position.0, target_position.1) != (0, 0) {
+        // can move horizontally first
+        res.append(&mut dc.clone());
+        res.append(&mut dr.clone());
+    } else {
+        // moving left and can move vertically first
+        res.append(&mut dr.clone());
+        res.append(&mut dc.clone());
+    }
+    res.push(KeyPad::A);
+    res
+}
+
+fn part2(data: &str) {
+    let mut ans: usize = 0;
+    data.lines().for_each(|line| {
+        let num_bot = line
+            .trim()
+            .chars()
+            .map(|chr| match chr {
+                '1' => NumPad::One,
+                '2' => NumPad::Two,
+                '3' => NumPad::Three,
+                '4' => NumPad::Four,
+                '5' => NumPad::Five,
+                '6' => NumPad::Six,
+                '7' => NumPad::Seven,
+                '8' => NumPad::Eight,
+                '9' => NumPad::Nine,
+                '0' => NumPad::Zero,
+                'A' => NumPad::A,
+                _ => panic!(),
+            })
+            .collect::<Vec<NumPad>>();
+
+        // I don't actually care what the sequence is...
+        // store counts for each sequence char to char
+        // sequence always gets expanded by the char to char step
+        let first_keypad = numpad_instructions(&num_bot);
+
+        let mut modifiable_counts: HashMap<(KeyPad, KeyPad), usize> = HashMap::new();
+        first_keypad.windows(2).for_each(|pair| {
+            let count = modifiable_counts.get(&(pair[0], pair[1])).unwrap_or(&0);
+            modifiable_counts.insert((pair[0], pair[1]), count + 1);
+        });
+        // don't skip the first item!
+        let start_count = modifiable_counts
+            .get(&(KeyPad::A, first_keypad[0]))
+            .unwrap_or(&0);
+        modifiable_counts.insert((KeyPad::A, first_keypad[0]), start_count + 1);
+
+        let mut cache: HashMap<(KeyPad, KeyPad), Vec<KeyPad>> = HashMap::new();
+
+        for _ in 0..25 {
+            let mut next_modifiable_counts: HashMap<(KeyPad, KeyPad), usize> = HashMap::new();
+            modifiable_counts.iter().for_each(|((start, end), count)| {
+                let next_iter_vec = match cache.get(&(*start, *end)) {
+                    Some(val) => val.clone(),
+                    None => {
+                        let x = part2_get_keypad(&start, &end);
+                        cache.insert((*start, *end), x.clone());
+                        x
+                    }
+                };
+                next_iter_vec.windows(2).for_each(|pair_arr| {
+                    let prev_count = next_modifiable_counts
+                        .get(&(pair_arr[0], pair_arr[1]))
+                        .unwrap_or(&0);
+                    next_modifiable_counts.insert((pair_arr[0], pair_arr[1]), prev_count + count);
+                });
+                // don't skip the first item!
+                let prev_count_start = next_modifiable_counts
+                    .get(&(KeyPad::A, next_iter_vec[0]))
+                    .unwrap_or(&0);
+                next_modifiable_counts
+                    .insert((KeyPad::A, next_iter_vec[0]), prev_count_start + count);
+            });
+            modifiable_counts = next_modifiable_counts;
+        }
+        let my_press_count = modifiable_counts.values().sum::<usize>();
+
+        let target_numeric = line.trim()[0..3].parse::<usize>().unwrap();
+        println!("For {line}, {my_press_count} * {target_numeric}");
+
+        ans += target_numeric * my_press_count;
+    });
+    println!("{ans}");
+}
